@@ -2,6 +2,8 @@ new Vue({
     el: '#app',
     data: {
         show: false,
+        hitMax: 10,
+        specialHitMax: 15,
         userHP: 50,
         monsterHP: 50,
         userBar: {
@@ -30,22 +32,23 @@ new Vue({
             this.monsterHP = 100;
         },
         attack: function() {
-            var userHit = this.random(10);
-            var monsterHit = this.random(10);
-            this.userHP -= userHit;
-            this.monsterHP -= monsterHit;
-            // this.userBar.width = this.userHP + '%';
-            // this.monsterBar.width = this.monsterHP + '%';
+            this.userHP -= this.random(this.hitMax); // Monster attack
+            this.monsterHP -= this.random(this.hitMax); // User attack
+            if (this.special < 3) {
+                this.special++;
+            }
         },
         specialAttack: function() {
-            var monsterHit = this.random(10);
             if (this.special > 0) {
-                var userHit = this.random(15);
-            } else {
-                var userHit = 0;
+                this.monsterHP -= this.random(this.specialHitMax); // User attack
+                this.userHP -= this.random(this.hitMax); // Monster attack
             }
-            this.userHP -= userHit;
-            this.monsterHP = monsterHit;
+            if (this.special > 0) {
+                this.special--;
+            } else {
+                alert("You are out of 'Special Attacks'!");
+                this.userHP -= this.random(this.specialHitMax);
+            }
         }
     }
 });
