@@ -1,10 +1,15 @@
 new Vue({
     el: '#app',
     data: {
-        show: false,
+        // Constants
         hitMax: 10,
         specialHitMax: 15,
-        minHeal: 5,
+        specialMax: 3,
+        minHealHP: 3,
+        healMax: 2,
+
+        //
+        show: false,
         userHP: 50,
         monsterHP: 50,
         userBar: {
@@ -13,7 +18,9 @@ new Vue({
         monsterBar: {
             width: 50 + '%'
         },
-        special: 3
+        special: 3,
+        heal: 2,
+        attackList: []
     },
     watch: {
         userHP: function() {
@@ -24,57 +31,78 @@ new Vue({
         }
     },
     methods: {
-        random: function(max) {
-            return Math.floor(Math.random() * Math.floor(max));
-        },
         startGame: function() {
+            // Initialize Game Start Values
             this.show = true,
             this.userHP = 100;
             this.monsterHP = 100;
+            this.attackList = [];
+            this.special = 3;
+            this.heal = 2;
+        },
+        random: function(max) {
+            return Math.floor(Math.random() * Math.floor(max));
+        },
+        pushToList: function(val) {
+            this.attackList.push(val);
         },
         attack: function() {
-            // User attacks
-            var attackVal = this.random(this.hitMax);
-            this.monsterHP -= this.random(this.hitMax);
-            console.log('User attacks with ', attackVal, 'HP!');
+            var attack = {};
+            attack['user'] = this.random(this.hitMax);
+            attack['monster'] = this.random(this.hitMax);
 
-            // Monster attacks
-            this.userHP -= attackVal;
-            console.log('Monster attacks with ', attackVal, 'HP!');
-            attackVal = this.random(this.hitMax);
-            if (this.special < 3) {
+            this.monsterHP -= attack['user'];
+            this.userHP -= attack['monster'];
+
+            // Special attack regen
+            if (this.special < this.specialMax) {
                 this.special++;
             }
+
+            if (this.heal < this.healMax) {
+                this.heal++;
+            }
+
+            this.pushToList(attack);
         },
         specialAttack: function() {
-            // User attacks with Special
-            var attack = 0;
+            var attack = {}
             if (this.special > 0) {
                 this.special--;
+                attack['user'] = this.random(this.specialHitMax);
+                attack['monster'] = this.random(this.hitMax);
             } else {
-                alert("You are out of 'Special Attacks'!");
-                attack = this.random(this.specialHitMax);
-                this.userHP -= attack;
-                console.log('Monster attacks with special: ', attack);
+                attack['user'] = 0;
+                attack['monster'] = this.random(this.specialHitMax);
             }
-            if (this.special > 0) {
-                attack = this.random(this.specialHitMax);
-                this.monsterHP -= attack;
-                console.log('User attacks: ', attack);
-                attack = this.random(this.hitMax);
-                this.userHP -= attack;
-                console.log('Monster attacks: ', attack);
-            }
+
+            this.monsterHP -= attack['user'];
+            this.userHP -= attack['monster']
+
+            this.pushToList(attack);
         },
-        heal: function() {
-            this.userHP += this.random(this.hitMax) + this.minHeal;
-            console.log('healed');
+        healing: function() {
+            var healing = {};
+            if (this.heal > 0) {
+                this.heal--;
+                healing['heal'] =  this.random(this.hitMax) + this.minHealHP;
+            } else {
+                healing['heal'] = 0;
+            }
+
+            healing['monster'] = this.random(this.specialHitMax);
+
+            this.userHP += healing['heal'];
 
             var $$ = this;
             setTimeout(function() {
-                $$.userHP -= $$.random($$.specialHitMax);
-                console.log('attacked');
+                $$.userHP -= healing['monster'];
             }, 500);
+
+            // this.userHP -= heal['monster']
+
+
+            this.pushToList(healing);
         }
     }
 });
