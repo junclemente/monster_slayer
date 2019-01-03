@@ -4,6 +4,7 @@ new Vue({
         show: false,
         hitMax: 10,
         specialHitMax: 15,
+        minHeal: 5,
         userHP: 50,
         monsterHP: 50,
         userBar: {
@@ -32,23 +33,48 @@ new Vue({
             this.monsterHP = 100;
         },
         attack: function() {
-            this.userHP -= this.random(this.hitMax); // Monster attack
-            this.monsterHP -= this.random(this.hitMax); // User attack
+            // User attacks
+            var attackVal = this.random(this.hitMax);
+            this.monsterHP -= this.random(this.hitMax);
+            console.log('User attacks with ', attackVal, 'HP!');
+
+            // Monster attacks
+            this.userHP -= attackVal;
+            console.log('Monster attacks with ', attackVal, 'HP!');
+            attackVal = this.random(this.hitMax);
             if (this.special < 3) {
                 this.special++;
             }
         },
         specialAttack: function() {
-            if (this.special > 0) {
-                this.monsterHP -= this.random(this.specialHitMax); // User attack
-                this.userHP -= this.random(this.hitMax); // Monster attack
-            }
+            // User attacks with Special
+            var attack = 0;
             if (this.special > 0) {
                 this.special--;
             } else {
                 alert("You are out of 'Special Attacks'!");
-                this.userHP -= this.random(this.specialHitMax);
+                attack = this.random(this.specialHitMax);
+                this.userHP -= attack;
+                console.log('Monster attacks with special: ', attack);
             }
+            if (this.special > 0) {
+                attack = this.random(this.specialHitMax);
+                this.monsterHP -= attack;
+                console.log('User attacks: ', attack);
+                attack = this.random(this.hitMax);
+                this.userHP -= attack;
+                console.log('Monster attacks: ', attack);
+            }
+        },
+        heal: function() {
+            this.userHP += this.random(this.hitMax) + this.minHeal;
+            console.log('healed');
+
+            var $$ = this;
+            setTimeout(function() {
+                $$.userHP -= $$.random($$.specialHitMax);
+                console.log('attacked');
+            }, 500);
         }
     }
 });
