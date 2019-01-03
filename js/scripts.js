@@ -2,11 +2,12 @@ new Vue({
     el: '#app',
     data: {
         // Constants
-        hitMax: 10,
-        specialHitMax: 15,
-        specialMax: 3,
-        minHealHP: 3,
-        healMax: 2,
+        hitMax: 10, // maximum hit HP
+        specialHitMax: 15,  // maximum special hit HP
+        specialMax: 3,  // max use of special attack in a row
+        minHealHP: 3,  // min heal HP
+        healMax: 2,  // max use of heal in a row
+        maxHP: 100,  // max HP possible
 
         //
         show: false,
@@ -34,11 +35,11 @@ new Vue({
         startGame: function() {
             // Initialize Game Start Values
             this.show = true,
-            this.userHP = 100;
-            this.monsterHP = 100;
+            this.userHP = this.maxHP;
+            this.monsterHP = this.maxHP;
             this.attackList = [];
-            this.special = 3;
-            this.heal = 2;
+            this.special = this.specialMax;
+            this.heal = this.healMax;
         },
         random: function(max) {
             return Math.floor(Math.random() * Math.floor(max));
@@ -92,15 +93,16 @@ new Vue({
 
             healing['monster'] = this.random(this.specialHitMax);
 
-            this.userHP += healing['heal'];
+            if ((this.userHP + healing['heal']) >= 100) {
+                this.userHP = this.maxHP;
+            } else {
+                this.userHP += healing['heal'];
+            }
 
             var $$ = this;
             setTimeout(function() {
                 $$.userHP -= healing['monster'];
             }, 500);
-
-            // this.userHP -= heal['monster']
-
 
             this.pushToList(healing);
         }
