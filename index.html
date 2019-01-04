@@ -44,9 +44,19 @@
     <section class="row log">
         <div class="small-12 columns">
             <ul>
-                <li v-for="item in attackList">{{ item }}
-
-                </li>
+                <template v-for="attack in attackList">
+                    <template v-for="(value, key, idx) in attack">
+                    <li v-if="key == 'user' " class="player-turn">
+                        Player hits monster for {{ value }}
+                    </li>
+                    <li v-if="key == 'heal' " class="player-turn">
+                        Player heals for {{ value }}
+                    </li>
+                    <li v-if="key == 'monster' " class="monster-turn">
+                        Monster hits player for {{ value }}
+                    </li>
+                    </template>
+                </template>
             </ul>
         </div>
     </section>
