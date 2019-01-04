@@ -26,9 +26,17 @@ new Vue({
     watch: {
         userHP: function() {
             this.userBar.width = this.userHP + '%'
+            if (this.userHP <= 0) {
+                alert('You have lost this battle!');
+                this.show = false;
+            }
         },
         monsterHP: function() {
-            this.monsterBar.width = this.monsterHP + '%'
+            this.monsterBar.width = this.monsterHP + '%';
+            if (this.monsterHP <=0) {
+                alert('Congratulations! You defeated the monster!');
+                this.show = false;
+            }
         }
     },
     methods: {
@@ -42,7 +50,8 @@ new Vue({
             this.heal = this.healMax;
         },
         random: function(max) {
-            return Math.floor(Math.random() * Math.floor(max));
+            // return Math.floor(Math.random() * Math.floor(max)) + 1;
+            return Math.floor(Math.random() * max) + 1;
         },
         pushToList: function(val) {
             this.attackList.push(val);
